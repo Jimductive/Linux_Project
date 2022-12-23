@@ -105,6 +105,16 @@ resource "local_file" "iptable" {
   )
 }
 
+# -- NFS file set
+resource "local_file" "nfs" {
+  filename = "../ansible/nfs_config.yml"
+  content  = templatefile("../templates/nfs_config.tmpl",
+    {
+      front = openstack_compute_instance_v2.front_instance.network.1.fixed_ip_v4
+    }
+  )
+}
+
 # -- Print informations of instances
 output "front_ip" {
     value = [openstack_compute_instance_v2.front_instance.name,openstack_compute_instance_v2.front_instance.network.0.fixed_ip_v4,openstack_compute_instance_v2.front_instance.network.1.fixed_ip_v4]
