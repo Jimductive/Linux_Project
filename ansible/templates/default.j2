@@ -1,0 +1,16 @@
+server {
+	listen {{ ansible_facts.default_ipv4.address }}:9080;
+	root /var/www/html;
+	index index.html index.htm index.nginx-debian.html;
+	server_name _;
+	location / {
+		try_files $uri $uri/ =404;
+	}
+}
+
+server {
+	listen {{ ansible_facts.ens4.ipv4.address }}:9081;
+	location / {
+		proxy_pass http://{{ ansible_facts.ens4.ipv4.address }}:8080;
+	}
+}

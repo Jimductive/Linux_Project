@@ -1,0 +1,101 @@
+---
+# -- NGINX INSTALL --
+- name: Install and configure a kitten web page
+  hosts: backends
+  vars:
+    the_best: "Mon user eductive09 : le meilleur !"
+  tasks:
+    - name: Ensure package nginx is installed
+      apt:
+        name: nginx
+        state: latest
+    - name: Ensure service nginx is running
+      service:
+        name: nginx
+        state: started
+    - name: Upload Kitten webpage
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/index.j2
+        dest: /var/www/html/index.html
+    - name: Configure Nginx to listen on vrack
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/default.j2
+        dest: /etc/nginx/sites-available/default
+      notify:
+        - Restart nginx
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+# -- HAPROXY INSTALL --
+- name: Install and haproxy on front
+  hosts: front
+  tasks:
+    - name: Ensure package haproxy is installed
+      apt:
+        name: haproxy
+        state: latest
+    - name: Ensure service haproxy is running
+      service:
+        name: haproxy
+        state: started
+    - name: Configure haproxy
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/haproxy.j2
+        dest: /etc/haproxy/haproxy.cfg
+      notify:
+        - Reload haproxy
+  handlers:
+    - name: Reload haproxy
+      ansible.builtin.service:
+        name: haproxy
+        state: reloaded
+
+# -- DOCKER INSTALL --
+- name: Install and deploy Docker
+  hosts: backends
+  tasks:
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - lsb-release
+          - gnupg
+        state: latest
+        update_cache: true
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/debian/gpg
+        state: present
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/debian bullseye stable
+        state: present
+    - name: Update apt and install docker-compose
+      apt:
+        pkg:
+          - docker-ce
+          - docker-compose
+          - docker-compose-plugin
+        state: latest
+        update_cache: true
+    - name: Deploy ifconfig files
+      copy:
+        src: /home/eductive09/Linux_Project/ansible/ifconfig.io/
+        dest: /tmp/ifconfig.io/
+    - name: Deploy docker-compose template
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/docker-compose.j2
+        dest: /tmp/ifconfig.io/docker-compose.yml
+    - name: Deploy Docker Compose stack
+      community.docker.docker_compose:
+        project_src: /tmp/ifconfig.io
+        files:
+          - docker-compose.yml
+
+# -- IPTABLE PLAYBOOK START
+- name: Use IPTable playbook
+  import_playbook: '/home/eductive09/Linux_Project/ansible/iptable_config.yml'

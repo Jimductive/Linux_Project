@@ -1,0 +1,85 @@
+#------------------
+# Global settings
+#------------------
+global
+    log 127.0.0.1 local0 notice
+    user haproxy
+    group haproxy
+    chroot  /var/lib/haproxy
+    daemon
+    stats socket /var/lib/haproxy/stats mode 660 level operator
+    maxconn 8000
+    tune.ssl.default-dh-param   2048
+    pidfile /var/run/haproxy.pid
+
+#------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use- if not designated in their block
+#------------------
+defaults
+    log global
+    retries 3
+    option      redispatch
+    maxconn 8000
+    timeout http-request 90s
+    timeout queue 90s
+    timeout connect 90s
+    timeout client 90s
+    timeout server 90s
+    timeout check 90s
+    stats       enable
+
+#------------------
+# listen instances
+#------------------
+listen stats
+    bind 0.0.0.0:8080
+    log global
+    mode http
+    maxconn 10
+    timeout client 1m
+    timeout connect 1m
+    timeout queue 1m
+    timeout server 1m
+    stats enable
+    stats hide-version
+    stats refresh 30s
+    stats show-node
+    stats uri /
+
+#------------------
+# frontend instances
+#------------------
+frontend Frontend_1
+    bind 0.0.0.0:80
+    mode http
+    default_backend Backend_1
+
+frontend Frontend_2
+    bind 0.0.0.0:81
+    mode http
+    default_backend Backend_2
+
+#------------------
+# backend instances
+#------------------
+backend Backend_1
+    mode http
+    balance roundrobin
+    {% for backend in groups.backend_gra -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.default_ipv4.address }}:9080 check
+    {% endfor -%}
+    {% for backend in groups.backend_sbg -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.default_ipv4.address }}:9080 check backup
+    {% endfor -%}
+
+
+backend Backend_2
+    mode http
+    balance roundrobin
+    {% for backend in groups.backend_gra -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9081 check
+    {% endfor -%}
+    {% for backend in groups.backend_sbg -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9081 check backup
+    {% endfor -%}

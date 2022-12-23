@@ -1,0 +1,27 @@
+---
+front:
+  hosts:
+    57.128.86.110:
+      ansible_user: debian
+      ansible_become: True
+
+backends:
+  hosts:
+    51.91.147.83:
+      ansible_user: debian
+      ansible_become: True
+    57.128.86.209:
+      ansible_user: debian
+      ansible_become: True
+
+backend_sbg:
+  hosts:
+    51.91.147.83:
+      ansible_user: debian
+      ansible_become: True
+
+backend_gra:
+  hosts:
+    57.128.86.209:
+      ansible_user: debian
+      ansible_become: True
