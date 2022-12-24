@@ -6,6 +6,6 @@
   - name: Open port 22
     command: iptables -A INPUT -p tcp --dport 22 -j ACCEPT
   - name: Allow HTTP trafic from front server
-    command: iptables -A INPUT -p tcp -s 57.128.86.110 --dport 9080 -j ACCEPT
+    command: iptables -A INPUT -p tcp -s 57.128.86.16 --dport 9080 -j ACCEPT
   - name: Block all trafic
     command: iptables -A INPUT -i ens3 -j DROP

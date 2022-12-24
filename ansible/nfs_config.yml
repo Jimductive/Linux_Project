@@ -21,7 +21,7 @@
     - name: Reload nfs-kernel-server
       ansible.builtin.service:
         name: nfs-kernel-server
-        state: reload
+        state: reloaded
 
 - name: Install and deploy NFS on backends
   hosts: backends
@@ -39,6 +39,7 @@
         state: directory
     - name: Mount NFS folder
       ansible.posix.mount:
-        src: 192.168.0.200:/home/wordpress-data
+        src: 192.168.9.197:/home/wordpress-data
         path: /home/wordpress-data
+        fstype: nfs
         state: mounted

@@ -1,7 +1,7 @@
 ---
 front:
   hosts:
-    57.128.86.110:
+    57.128.86.16:
       ansible_user: debian
       ansible_become: True
 
@@ -10,7 +10,7 @@ backends:
     51.91.147.83:
       ansible_user: debian
       ansible_become: True
-    57.128.86.209:
+    57.128.87.233:
       ansible_user: debian
       ansible_become: True
 
@@ -22,6 +22,6 @@ backend_sbg:
 
 backend_gra:
   hosts:
-    57.128.86.209:
+    57.128.87.233:
       ansible_user: debian
       ansible_become: True

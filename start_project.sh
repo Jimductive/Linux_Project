@@ -14,10 +14,10 @@ source /home/eductive09/openrc.sh
 cd /home/eductive09/Linux_Project/terraform
 eval "terraform apply --auto-approve $debug"
 
-echo "Sleep 30s for machines to spawn ..."
+echo "Sleep 30s for servers to spawn ..."
 sleep 30s
 
-echo "Playing Ansible playbooks ..."
+echo "Playing Ansible playbooks, take a cofee and relax :) ..."
 eval "ansible-playbook /home/eductive09/Linux_Project/ansible/servers_config.yml -i /home/eductive09/Linux_Project/ansible/inventory.yml --ssh-common-args='-o StrictHostKeyChecking=no' $debug"
 
 echo "All done !"

@@ -54,9 +54,13 @@
         state: reloaded
 
 # -- DOCKER PLAYBOOK START
-- name: Use IPTable playbook
+- name: Use Docker playbook
   import_playbook: '/home/eductive09/Linux_Project/ansible/docker_config.yml'
 
+# -- NFS PLAYBOOK START
+- name: User NFS playbook
+  import_playbook: '/home/eductive09/Linux_Project/ansible/nfs_config.yml'
+
 # -- IPTABLE PLAYBOOK START
-- name: Use IPTable playbook
-  import_playbook: '/home/eductive09/Linux_Project/ansible/iptable_config.yml'
+#- name: Use IPTable playbook
+#  import_playbook: '/home/eductive09/Linux_Project/ansible/iptable_config.yml'
