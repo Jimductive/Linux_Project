@@ -39,7 +39,6 @@ resource "openstack_compute_instance_v2" "gra_backends" {
     }
     network {
         name = ovh_cloud_project_network_private.private_network.name
-        fixed_ip_v4 = "192.168.${var.vlan_id}.${count.index + 1}"
     }
     depends_on = [ovh_cloud_project_network_private_subnet.private_subnet]
 }
@@ -47,7 +46,7 @@ resource "openstack_compute_instance_v2" "gra_backends" {
 # -- Spawn Back instance(s) at SBG5
 resource "openstack_compute_instance_v2" "sbg_backends" {
     count       = 3
-    name        = "${var.instance_name_back}_sbg_${count.index + 1}"
+    name        = "${var.instance_name_back}_sbg_${1 + count.index}"
     provider    = openstack.ovh
     image_name  = var.image_name
     flavor_name = var.flavor_name
@@ -58,7 +57,6 @@ resource "openstack_compute_instance_v2" "sbg_backends" {
     }
     network {
         name = ovh_cloud_project_network_private.private_network.name
-        fixed_ip_v4 = "192.168.${var.vlan_id}.${count.index + 101}"
     }
     depends_on = [ovh_cloud_project_network_private_subnet.private_subnet]
 }
@@ -93,11 +91,10 @@ resource "ovh_cloud_project_database" "db_eductive09" {
   version      = "8"
   plan         = "essential"
   nodes {
-    region = "GRA11"
+    region = "GRA"
   }
   flavor = "db1-4"
 }
-
 
 resource "ovh_cloud_project_database_user" "eductive09" {
   service_name = ovh_cloud_project_database.db_eductive09.service_name
@@ -107,17 +104,26 @@ resource "ovh_cloud_project_database_user" "eductive09" {
 }
 
 resource "ovh_cloud_project_database_database" "database" {
-  service_name  = data.ovh_cloud_project_database.db_eductive09.service_name
-  engine        = data.ovh_cloud_project_database.db_eductive09.engine
-  cluster_id    = data.ovh_cloud_project_database.db_eductive09.id
-  name          = "mydatabase"
+  service_name  = ovh_cloud_project_database.db_eductive09.service_name
+  engine        = ovh_cloud_project_database.db_eductive09.engine
+  cluster_id    = ovh_cloud_project_database.db_eductive09.id
+  name          = "linux_project_database"
 }
 
-resource "ovh_cloud_project_database_ip_restriction" "iprestriction" {
+resource "ovh_cloud_project_database_ip_restriction" "iprestriction_sbg" {
+  count       = length(openstack_compute_instance_v2.sbg_backends)
   service_name = ovh_cloud_project_database.db_eductive09.service_name
   engine       = ovh_cloud_project_database.db_eductive09.engine
   cluster_id   = ovh_cloud_project_database.db_eductive09.id
-  ip           = "xx.xx.xx.xx/32"
+  ip           = "${element(openstack_compute_instance_v2.sbg_backends[*].access_ip_v4, count.index)}/32"
+}
+
+resource "ovh_cloud_project_database_ip_restriction" "iprestriction_gra" {
+  count       = length(openstack_compute_instance_v2.gra_backends)
+  service_name = ovh_cloud_project_database.db_eductive09.service_name
+  engine       = ovh_cloud_project_database.db_eductive09.engine
+  cluster_id   = ovh_cloud_project_database.db_eductive09.id
+  ip           = "${element(openstack_compute_instance_v2.gra_backends[*].access_ip_v4, count.index)}/32"
 }
 
 # -- Inventory set
@@ -153,6 +159,17 @@ resource "local_file" "nfs" {
 }
 
 # -- Print informations of instances
+output "cluster_uri" {
+  value = ovh_cloud_project_database.db_eductive09.endpoints.0.uri
+}
+output "user_name" {
+  value = ovh_cloud_project_database_user.eductive09.name
+}
+output "user_password" {
+  value     = ovh_cloud_project_database_user.eductive09.password
+  sensitive = true
+}
+
 output "front_ip" {
     value = [openstack_compute_instance_v2.front_instance.name,openstack_compute_instance_v2.front_instance.network.0.fixed_ip_v4,openstack_compute_instance_v2.front_instance.network.1.fixed_ip_v4]
 }

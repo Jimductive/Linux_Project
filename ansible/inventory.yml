@@ -1,7 +1,7 @@
 ---
 front:
   hosts:
-    57.128.65.18:
+    57.128.87.149:
       ansible_user: debian
       ansible_become: True
 
@@ -10,7 +10,19 @@ backends:
     57.128.69.202:
       ansible_user: debian
       ansible_become: True
-    57.128.80.61:
+    57.128.41.171:
+      ansible_user: debian
+      ansible_become: True
+    57.128.41.221:
+      ansible_user: debian
+      ansible_become: True
+    57.128.80.230:
+      ansible_user: debian
+      ansible_become: True
+    57.128.87.218:
+      ansible_user: debian
+      ansible_become: True
+    57.128.87.161:
       ansible_user: debian
       ansible_become: True
 
@@ -19,9 +31,21 @@ backend_sbg:
     57.128.69.202:
       ansible_user: debian
       ansible_become: True
+    57.128.41.171:
+      ansible_user: debian
+      ansible_become: True
+    57.128.41.221:
+      ansible_user: debian
+      ansible_become: True
 
 backend_gra:
   hosts:
-    57.128.80.61:
+    57.128.80.230:
+      ansible_user: debian
+      ansible_become: True
+    57.128.87.218:
+      ansible_user: debian
+      ansible_become: True
+    57.128.87.161:
       ansible_user: debian
       ansible_become: True
