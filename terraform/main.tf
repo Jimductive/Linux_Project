@@ -20,13 +20,14 @@ resource "openstack_compute_instance_v2" "front_instance" {
     }
     network {
         name = ovh_cloud_project_network_private.private_network.name
+        fixed_ip_v4 = "192.168.${var.vlan_id}.254"
     }
     depends_on = [ovh_cloud_project_network_private_subnet.private_subnet]
 }
 
 # -- Back instance(s) at GRA11
 resource "openstack_compute_instance_v2" "gra_backends" {
-    count       = 1
+    count       = 3
     name        = "${var.instance_name_back}_gra_${count.index + 1}"
     provider    = openstack.ovh
     image_name  = var.image_name
@@ -38,13 +39,14 @@ resource "openstack_compute_instance_v2" "gra_backends" {
     }
     network {
         name = ovh_cloud_project_network_private.private_network.name
+        fixed_ip_v4 = "192.168.${var.vlan_id}.${count.index + 1}"
     }
     depends_on = [ovh_cloud_project_network_private_subnet.private_subnet]
 }
 
 # -- Spawn Back instance(s) at SBG5
 resource "openstack_compute_instance_v2" "sbg_backends" {
-    count       = 1
+    count       = 3
     name        = "${var.instance_name_back}_sbg_${count.index + 1}"
     provider    = openstack.ovh
     image_name  = var.image_name
@@ -56,6 +58,7 @@ resource "openstack_compute_instance_v2" "sbg_backends" {
     }
     network {
         name = ovh_cloud_project_network_private.private_network.name
+        fixed_ip_v4 = "192.168.${var.vlan_id}.${count.index + 101}"
     }
     depends_on = [ovh_cloud_project_network_private_subnet.private_subnet]
 }
@@ -82,6 +85,40 @@ resource "openstack_compute_instance_v2" "sbg_backends" {
     provider     = ovh.ovh 
     no_gateway   = true
  }
+
+# -- Spawn database
+resource "ovh_cloud_project_database" "db_eductive09" {
+  service_name = var.service_name
+  engine       = "mysql"
+  version      = "8"
+  plan         = "essential"
+  nodes {
+    region = "GRA11"
+  }
+  flavor = "db1-4"
+}
+
+
+resource "ovh_cloud_project_database_user" "eductive09" {
+  service_name = ovh_cloud_project_database.db_eductive09.service_name
+  engine       = ovh_cloud_project_database.db_eductive09.engine
+  cluster_id   = ovh_cloud_project_database.db_eductive09.id
+  name         = "eductive09"
+}
+
+resource "ovh_cloud_project_database_database" "database" {
+  service_name  = data.ovh_cloud_project_database.db_eductive09.service_name
+  engine        = data.ovh_cloud_project_database.db_eductive09.engine
+  cluster_id    = data.ovh_cloud_project_database.db_eductive09.id
+  name          = "mydatabase"
+}
+
+resource "ovh_cloud_project_database_ip_restriction" "iprestriction" {
+  service_name = ovh_cloud_project_database.db_eductive09.service_name
+  engine       = ovh_cloud_project_database.db_eductive09.engine
+  cluster_id   = ovh_cloud_project_database.db_eductive09.id
+  ip           = "xx.xx.xx.xx/32"
+}
 
 # -- Inventory set
 resource "local_file" "inventory" {

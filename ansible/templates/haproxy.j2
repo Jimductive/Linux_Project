@@ -60,6 +60,12 @@ frontend Frontend_2
     mode http
     default_backend Backend_2
 
+frontend Frontend_3
+    bind 0.0.0.0:82
+    mode http
+    default_backend Backend_3
+
+
 #------------------
 # backend instances
 #------------------
@@ -82,4 +88,14 @@ backend Backend_2
     {% endfor -%}
     {% for backend in groups.backend_sbg -%}
       server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9081 check backup
+    {% endfor -%}
+
+backend Backend_3
+    mode http
+    balance roundrobin
+    {% for backend in groups.backend_gra -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9082 check
+    {% endfor -%}
+    {% for backend in groups.backend_sbg -%}
+      server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9082 check backup
     {% endfor -%}
