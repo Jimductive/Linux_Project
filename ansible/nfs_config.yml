@@ -39,7 +39,7 @@
         state: directory
     - name: Mount NFS folder
       ansible.posix.mount:
-        src: 192.168.9.197:/home/wordpress-data
+        src: 192.168.9.105:/home/wordpress-data
         path: /home/wordpress-data
         fstype: nfs
         state: mounted
