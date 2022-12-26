@@ -28,6 +28,7 @@
           - docker-compose-plugin
         state: latest
         update_cache: true
+
     - name: Deploy ifconfig files
       copy:
         src: /home/eductive09/Linux_Project/ansible/ifconfig.io/
@@ -39,5 +40,15 @@
     - name: Deploy Docker Compose stack
       community.docker.docker_compose:
         project_src: /tmp/ifconfig.io
+        files:
+          - docker-compose.yml
+
+    - name: Deploy wordpress files
+      copy:
+        src: /home/eductive09/Linux_Project/ansible/wordpress/
+        dest: /tmp/wordpress/
+    - name: Deploy Docker Compose stack
+      community.docker.docker_compose:
+        project_src: /tmp/wordpress
         files:
           - docker-compose.yml
