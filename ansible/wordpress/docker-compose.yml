@@ -6,8 +6,10 @@ services:
     ports:
       - 8083:80
     volumes:
+      - type: bind
+        source: /home/wordpress-data
+        target: /var/www/html
       - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./wp-app:/var/www/html
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "${DB_NAME}"
@@ -21,8 +23,10 @@ services:
   wpcli:
     image: wordpress:cli
     volumes:
+      - type: bind
+        source: /home/wordpress-data
+        target: /var/www/html
       - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-      - ./wp-app:/var/www/html
     environment:
       WORDPRESS_DB_HOST: db
       WORDPRESS_DB_NAME: "${DB_NAME}"
@@ -55,10 +59,4 @@ services:
       - type: bind
         source: /home/wordpress-data
         target: /var/lib/mysql
-      - ./wp-data:/docker-entrypoint-initdb.d
-    environment:
-      MYSQL_DATABASE: "${DB_NAME}"
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-
-volumes:
-  db_data:
+      - ./wp-data:/docker-entry
