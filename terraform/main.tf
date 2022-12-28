@@ -27,7 +27,7 @@ resource "openstack_compute_instance_v2" "front_instance" {
 
 # -- Back instance(s) at GRA11
 resource "openstack_compute_instance_v2" "gra_backends" {
-    count       = 3
+    count       = 1
     name        = "${var.instance_name_back}_gra_${count.index + 1}"
     provider    = openstack.ovh
     image_name  = var.image_name
@@ -45,7 +45,7 @@ resource "openstack_compute_instance_v2" "gra_backends" {
 
 # -- Spawn Back instance(s) at SBG5
 resource "openstack_compute_instance_v2" "sbg_backends" {
-    count       = 3
+    count       = 1
     name        = "${var.instance_name_back}_sbg_${1 + count.index}"
     provider    = openstack.ovh
     image_name  = var.image_name
