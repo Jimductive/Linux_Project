@@ -158,6 +158,17 @@ resource "local_file" "nfs" {
   )
 }
 
+# -- Database wordpress information
+resource "local_file" "password_file" {
+  filename = "../ansible/wordpress/.env"
+  content = <<EOF
+DB_HOST=${terraform output -raw cluster_uri}
+DB_NAME=linux_project_database
+DB_USER=eductive09
+DB_PASSWORD=${terraform output -raw user_password}
+EOF
+}
+
 # -- Print informations of instances
 output "cluster_uri" {
   value = ovh_cloud_project_database.db_eductive09.endpoints.0.uri

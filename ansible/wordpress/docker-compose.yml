@@ -6,19 +6,20 @@ services:
     ports:
       - 8082:80
     volumes:
-      - /home/wordpress-data:/var/www/html:delegated
+      - /home/wordpress-data:/var/www/html
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
     environment:
-      WORDPRESS_DB_HOST: mysql-e17ac174-o5d5bb6d4.database.cloud.ovh.net:20184
-      WORDPRESS_DB_NAME: linux_project_database
-      WORDPRESS_DB_USER: eductive09
-      WORDPRESS_DB_PASSWORD: AVNS_KIJI4FKd92oaFm7NT0B
+      WORDPRESS_DB_HOST: ${DB_HOST}
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
 
   pma:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: mysql-e17ac174-o5d5bb6d4.database.cloud.ovh.net:20184
-      PMA_USER: eductive09
-      PMA_PASSWORD: AVNS_KIJI4FKd92oaFm7NT0B
+      PMA_HOST: ${DB_HOST}
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
     ports:
       - 8083:80
 
