@@ -22,6 +22,6 @@ eval "ansible-playbook /home/eductive09/Linux_Project/ansible/servers_config.yml
 
 echo "All done !"
 
-terraform outputs
+terraform output
 
 echo -ne "Front IP Address : " && terraform show | tr '\n' ' ' | grep -oP 'front_ip = \[.*\]' | cut -d'[' -f2 | cut -d']' -f 1 | cut -d',' -f2 | cut -d '"' -f 2

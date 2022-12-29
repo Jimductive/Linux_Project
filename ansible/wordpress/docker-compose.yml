@@ -4,59 +4,23 @@ services:
   wp:
     image: wordpress:latest
     ports:
-      - 8083:80
+      - 8082:80
     volumes:
-      - type: bind
-        source: /home/wordpress-data
-        target: /var/www/html
-      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+      - /home/wordpress-data:/var/www/html:delegated
     environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD}"
-    depends_on:
-      - db
-    links:
-      - db
-
-  wpcli:
-    image: wordpress:cli
-    volumes:
-      - type: bind
-        source: /home/wordpress-data
-        target: /var/www/html
-      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
-    environment:
-      WORDPRESS_DB_HOST: db
-      WORDPRESS_DB_NAME: "${DB_NAME}"
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: "${DB_PASSWORD}"
-    depends_on:
-      - db
-      - wp
+      WORDPRESS_DB_HOST: mysql-e17ac174-o5d5bb6d4.database.cloud.ovh.net:20184
+      WORDPRESS_DB_NAME: linux_project_database
+      WORDPRESS_DB_USER: eductive09
+      WORDPRESS_DB_PASSWORD: AVNS_KIJI4FKd92oaFm7NT0B
 
   pma:
     image: phpmyadmin/phpmyadmin
     environment:
-      PMA_HOST: db
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
-      UPLOAD_LIMIT: 50M
+      PMA_HOST: mysql-e17ac174-o5d5bb6d4.database.cloud.ovh.net:20184
+      PMA_USER: eductive09
+      PMA_PASSWORD: AVNS_KIJI4FKd92oaFm7NT0B
     ports:
-      - 8082:80
-    links:
-      - db
+      - 8083:80
 
-  db:
-    image: mysql:latest
-    command: [
-        '--default_authentication_plugin=mysql_native_password',
-        '--character-set-server=utf8mb4',
-        '--collation-server=utf8mb4_unicode_ci'
-    ]
-    volumes:
-      - type: bind
-        source: /home/wordpress-data
-        target: /var/lib/mysql
-      - ./wp-data:/docker-entry
+volumes:
+  wordpress-data:
