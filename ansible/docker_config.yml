@@ -35,7 +35,7 @@
         dest: /tmp/ifconfig.io/
     - name: Deploy docker-compose template
       template:
-        src: /home/eductive09/Linux_Project/ansible/templates/docker-compose.j2
+        src: /home/eductive09/Linux_Project/ansible/templates/docker-compose-ifconfig.j2
         dest: /tmp/ifconfig.io/docker-compose.yml
     - name: Deploy Docker Compose stack
       community.docker.docker_compose:
@@ -47,6 +47,10 @@
       copy:
         src: /home/eductive09/Linux_Project/ansible/wordpress/
         dest: /tmp/wordpress/
+    - name: Deploy docker-compose template
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/docker-compose-wordpress.j2
+        dest: /tmp/wordpress/docker-compose.yml
     - name: Deploy Docker Compose stack
       community.docker.docker_compose:
         project_src: /tmp/wordpress

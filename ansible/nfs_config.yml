@@ -1,0 +1,45 @@
+---
+# -- NFS INSTALL --
+- name: Install and deploy NFS on front
+  hosts: front
+  tasks:
+    - name: Install required system packages
+      apt:
+        pkg:
+          - nfs-kernel-server
+        state: latest
+        update_cache: true
+    - name: Create the folder
+      file:
+        path: /home/wordpress-data
+        mode: '0777'
+        state: directory
+    - name: Deploy NFS template
+      template:
+        src: /home/eductive09/Linux_Project/ansible/templates/exports.j2
+        dest: /etc/exports
+    - name: Reload nfs-kernel-server
+      ansible.builtin.service:
+        name: nfs-kernel-server
+        state: reloaded
+
+- name: Install and deploy NFS on backends
+  hosts: backends
+  tasks:
+    - name: Install required system packages
+      apt:
+        pkg:
+          - nfs-common
+        state: latest
+        update_cache: true
+    - name: Create the folder
+      file:
+        path: /home/wordpress-data
+        mode: '0777'
+        state: directory
+    - name: Mount NFS folder
+      ansible.posix.mount:
+        src: 192.168.9.254:/home/wordpress-data
+        path: /home/wordpress-data
+        fstype: nfs
+        state: mounted

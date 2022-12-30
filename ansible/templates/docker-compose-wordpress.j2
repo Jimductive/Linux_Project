@@ -1,0 +1,27 @@
+version: '3.6'
+
+services:
+  wp:
+    image: wordpress:latest
+    ports:
+      - 8082:80
+    volumes:
+      - /home/wordpress-data:/var/www/html
+      - ./config/php.conf.ini:/usr/local/etc/php/conf.d/conf.ini
+    environment:
+      WORDPRESS_DB_HOST: {{ DB_HOST }}
+      WORDPRESS_DB_NAME: linux_project_database
+      WORDPRESS_DB_USER: eductive09
+      WORDPRESS_DB_PASSWORD: {{ DB_PASSWORD }}
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: {{ DB_HOST }}
+      PMA_USER: eductive09
+      PMA_PASSWORD: {{ DB_PASSWORD }}
+    ports:
+      - 8083:80
+
+volumes:
+  wordpress-data:
