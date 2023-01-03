@@ -14,10 +14,3 @@ server {
 		proxy_pass http://{{ ansible_facts.ens4.ipv4.address }}:8080;
 	}
 }
-
-server {
-	listen {{ ansible_facts.ens4.ipv4.address }}:9082;
-	location / {
-		proxy_pass http://{{ ansible_facts.ens4.ipv4.address }}:8082;
-	}
-}
