@@ -83,6 +83,7 @@ backend Backend_1
 backend Backend_2
     mode http
     balance roundrobin
+    option forwardfor
     {% for backend in groups.backend_gra -%}
       server {{ hostvars[backend].ansible_facts.fqdn }} {{ hostvars[backend].ansible_facts.ens4.ipv4.address }}:9081 check
     {% endfor -%}
