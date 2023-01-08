@@ -143,7 +143,8 @@ resource "local_file" "iptable" {
   filename = "../ansible/iptable_config.yml"
   content  = templatefile("../templates/iptable_config.tmpl",
     {
-      front = openstack_compute_instance_v2.front_instance.access_ip_v4
+      front_pub = openstack_compute_instance_v2.front_instance.access_ip_v4
+      front_priv = openstack_compute_instance_v2.front_instance.network.1.fixed_ip_v4
     }
   )
 }
